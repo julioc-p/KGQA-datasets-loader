@@ -25,12 +25,11 @@ _URL = "https://github.com/apoorvumang/CronKGQA"
 
 _LICENSE = "MIT License"
 
+
 class CronQuestionsConfig(datasets.BuilderConfig):
     """BuilderConfig for CronQuestions"""
-    def __init__(self,
-                 data_url,
-                 data_dir,
-                 **kwargs):
+
+    def __init__(self, data_url, data_dir, **kwargs):
         """BuilderConfig for CronQuestions.
         Args:
           **kwargs: keyword arguments forwarded to super.
@@ -39,14 +38,16 @@ class CronQuestionsConfig(datasets.BuilderConfig):
         self.data_url = data_url
         self.data_dir = data_dir
 
+
 class CronQuestions(datasets.GeneratorBasedBuilder):
     """CronQuestions"""
+
     BUILDER_CONFIGS = [
         CronQuestionsConfig(
             name="cron_questions",
             description="CronQuestions",
             data_url="https://drive.google.com/u/0/uc?id=1wilPf3qohD-6156Daaz5M6GRuJiRP3P4&export=download",
-            data_dir="CronQuestions"
+            data_dir="CronQuestions",
         )
     ]
 
@@ -63,47 +64,55 @@ class CronQuestions(datasets.GeneratorBasedBuilder):
                     "answers": datasets.Value("string"),
                     "answer_type": datasets.Value("string"),
                     "template": datasets.Value("string"),
-                    "entities": datasets.Sequence(
-                        datasets.Value("string")
-                    ),
+                    "entities": datasets.Sequence(datasets.Value("string")),
                     "times": datasets.Value("string"),
-                    "relations": datasets.Sequence(
-                        datasets.Value("string")
-                    ),
+                    "relations": datasets.Sequence(datasets.Value("string")),
                     "type": datasets.Value("string"),
                     "annotation": datasets.Value("string"),
                     "uniq_id": datasets.Value("int64"),
-                    "paraphrases": datasets.Sequence(
-                        datasets.Value("string")
-                    )
+                    "paraphrases": datasets.Sequence(datasets.Value("string")),
                 }
-            )
+            ),
         )
 
     def _split_generators(self, dl_manager):
-        download_dir = dl_manager.download_and_extract(self.config.data_url)
+        data_dir = self.config.data_dir
+        if not data_dir:
+            data_dir = dl_manager.download_and_extract(self.config.data_url)
         return [
             datasets.SplitGenerator(
                 name=datasets.Split.TRAIN,
                 gen_kwargs={
-                    "data_file": os.path.join(download_dir, "data", "wikidata_big", "questions", "train.pickle"),
-                    "split": "train"
-                }
+                    "data_file": os.path.join(
+                        data_dir,
+                        "wikidata_big",
+                        "questions",
+                        "train.pickle",
+                    ),
+                    "split": "train",
+                },
             ),
             datasets.SplitGenerator(
                 name=datasets.Split.VALIDATION,
                 gen_kwargs={
-                    "data_file": os.path.join(download_dir, "data", "wikidata_big", "questions", "valid.pickle"),
-                    "split": "validation"
-                }
+                    "data_file": os.path.join(
+                        data_dir,
+                        "wikidata_big",
+                        "questions",
+                        "valid.pickle",
+                    ),
+                    "split": "validation",
+                },
             ),
             datasets.SplitGenerator(
                 name=datasets.Split.TEST,
                 gen_kwargs={
-                    "data_file": os.path.join(download_dir, "data", "wikidata_big", "questions", "test.pickle"),
-                    "split": "test"
-                }
-            )
+                    "data_file": os.path.join(
+                        data_dir, "wikidata_big", "questions", "test.pickle"
+                    ),
+                    "split": "test",
+                },
+            ),
         ]
 
     def _generate_examples(self, data_file, split, **kwargs):
